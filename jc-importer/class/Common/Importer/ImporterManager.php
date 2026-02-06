@@ -283,7 +283,15 @@ class ImporterManager
         }
 
         if (!file_exists($path . '/.htaccess')) {
-            file_put_contents($path . '/.htaccess', 'deny from all');
+            file_put_contents($path . '/.htaccess', "# Apache 2.4+
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+
+# Apache 2.2 and older (or when mod_authz_core isn't available)
+<IfModule !mod_authz_core.c>
+    Deny from all
+</IfModule>");
         }
 
         if (!file_exists($path . '/index.html')) {
@@ -430,6 +438,24 @@ class ImporterManager
     {
         $importer = $this->get_importer($id);
         Logger::setId($importer->getId());
+
+        $allowed_bases = apply_filters('iwp/importer/local_file/allowed_directories', [
+            realpath(WP_CONTENT_DIR)
+        ]);
+
+        $source = realpath($source);
+
+        $is_allowed = false;
+        foreach ($allowed_bases as $allowed_base) {
+            if ($allowed_base && strpos($source, $allowed_base) === 0) {
+                $is_allowed = true;
+                break;
+            }
+        }
+
+        if (!$source || !$is_allowed) {
+            return new \WP_Error('IWP_LOCAL_FILE_1', __('Access to this file path is not allowed.', 'jc-importer'));
+        }
 
         $allowed_file_types = $this->event_handler->run('importer.allowed_file_types', [$importer->getAllowedFileTypes()]);
         $prefix = $this->get_importer_file_prefix($importer);

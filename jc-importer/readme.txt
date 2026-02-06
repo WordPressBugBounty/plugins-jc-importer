@@ -1,10 +1,10 @@
 === Import WP – Export and Import CSV and XML files to WordPress ===
 Contributors: jcollings,importwp  
-Tags: wordpress csv import, wordpress xml import, xml, csv, datafeed, import
+Tags: wordpress csv import, wordpress xml import, xml, csv, datafeed
 Requires at least: 4.0  
-Tested up to: 6.8  
+Tested up to: 6.9  
 Requires PHP: 5.6  
-Stable tag: 2.14.12  
+Stable tag: 2.14.21  
 License: GPLv3  
 License URI: http://www.gnu.org/licenses/gpl.html  
 Donate link: https://www.importwp.com/
@@ -137,6 +137,45 @@ A full list of available addons can be found [here](https://www.importwp.com/int
 4. Import WP, Import history page
 
 == Changelog ==
+
+= 2.14.21 =
+
+* ADD - new filter `iwp/regenerate_response_filename_ext` to force unnamed downloaded attachments to add file extension based of content type.
+
+= 2.14.20 =
+
+* FIX - Fix issue when importer enabled fields on term template did not clear data if the field was empty.
+
+= 2.14.19 =
+
+* FIX - Force using filepath when creating htaccess and temp directories.
+
+= 2.14.18 =
+
+* FIX - Fix CVE-2025-12894 vulnerability reported by Wordfence, by restricting access to debug log files, session data, and export files.
+* FIX - Update local media attachment finder to use complete match over partial matches.
+
+= 2.14.17 =
+
+* ADD - Extend addon api to make handling group data easier.
+* FIX - Fix CVE-2025-12137 vulnerability reported by Wordfence, local file imports that are fetched from outside the wordpress directory now require to be whitelisted using the `iwp/importer/local_file/allowed_directories` filter.
+* ADD - Add permission fields for attachment meta data (title, caption, alt, description).
+
+= 2.14.16 =
+
+* FIX - Fixed issue with Exporter modal not always showing download button once complete.
+
+= 2.14.15 =
+
+* FIX - default unique identifier to template.
+
+= 2.14.14 =
+
+* FIX - XML Namespaces now handled properly in record chunks, instead of setting them previously to false.
+
+= 2.14.13 =
+
+* ADD - Add option to remove imported media when an importer deletes an item.
 
 = 2.14.12 =
 
