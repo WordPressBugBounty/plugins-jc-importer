@@ -2,6 +2,7 @@
 
 namespace ImportWP\Common\Model;
 
+use ImportWP\Common\Filesystem\Filesystem;
 use ImportWP\Common\Util\Logger;
 
 class ImporterModel
@@ -485,8 +486,17 @@ class ImporterModel
             $key = $result['meta_key'];
             $id = intval(str_replace('_importer_file_', '', $key));
             $value = $result['meta_value'];
-            if (file_exists($value)) {
-                $files[$id] = $value;
+            $resolved = Filesystem::resolve_importer_file_path($value);
+            if (!$resolved) {
+                continue;
+            }
+
+            $files[$id] = $resolved;
+
+            // Soft-migrate legacy absolute paths to uploads-relative storage.
+            $relative = Filesystem::to_uploads_relative_path($resolved);
+            if ($relative !== '' && $relative !== $value) {
+                update_post_meta($this->getId(), $key, $relative);
             }
         }
 
@@ -604,6 +614,26 @@ class ImporterModel
     public function setMap($key, $value)
     {
         $this->map[$key] = $value;
+    }
+
+    /**
+     * Replace the entire field map (skips null values from deleted repeater rows).
+     *
+     * @param array $map
+     */
+    public function replaceMap($map)
+    {
+        $this->map = [];
+        if (!is_array($map)) {
+            return;
+        }
+
+        foreach ($map as $key => $value) {
+            if ($value === null) {
+                continue;
+            }
+            $this->map[$key] = $value;
+        }
     }
 
     public function getEnabled()
