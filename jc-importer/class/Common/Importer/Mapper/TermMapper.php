@@ -45,7 +45,7 @@ class TermMapper extends AbstractMapper implements MapperInterface
                 // check all groups for a unique value
                 $unique_value = $this->find_unique_field_in_data($data, $field);
 
-                if (empty($unique_value)) {
+                if (!$this->has_identifier_value($unique_value)) {
                     continue;
                 }
 
@@ -74,7 +74,7 @@ class TermMapper extends AbstractMapper implements MapperInterface
         }
 
         if (!$has_unique_field) {
-            throw new MapperException(__("No Unique fields present.", 'jc-importer'));
+            throw new MapperException(__('No unique identifier value present. Check that Permissions has a unique identifier set and this row has a non-empty value. File column references are stored as _iwp_ref_uid.', 'jc-importer'));
         }
 
         if (!empty($meta_args)) {
